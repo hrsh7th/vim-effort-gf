@@ -8,7 +8,13 @@ let g:effort_gf#config.converters = get(g:effort_gf#config, 'converters', {})
 " effort_gf#find
 "
 function! effort_gf#find(word)
-  return s:find(s:convert(a:word))
+  let l:word = a:word
+  call s:debug('input', l:word)
+  let l:word = s:convert(l:word)
+  call s:debug('converted', l:word)
+  let l:word = s:find(l:word)
+  call s:debug('found', l:word)
+  return l:word
 endfunction
 
 "
@@ -22,7 +28,6 @@ endfunction
 " s:convert
 "
 function! s:convert(word)
-  call s:debug('input', a:word)
   let word = a:word
   let [word, ext] = s:take_extension(word)
   let word = substitute(word, '^[\./]*', '', 'g') " remove relative path.
@@ -33,7 +38,6 @@ function! s:convert(word)
     let word = g:effort_gf#config.converters[key](word)
     call s:debug(key, word)
   endfor
-  call s:debug('output', word)
   return word
 endfunction
 
@@ -41,9 +45,9 @@ endfunction
 " s:find
 "
 function! s:find(path)
-  let l:path = a:path
-  let l:path = empty(l:path) ? findfile(a:path . ';') : a:path
-  let l:path = empty(l:path) ? findfile(a:path . '**') : a:path
+  let l:path = ''
+  let l:path = strlen(l:path) == 0 ? findfile(a:path, g:effort_gf#config.get_buffer_path() . ';') : l:path
+  let l:path = strlen(l:path) == 0 ? findfile(a:path, s:find_root() . '**') : l:path
   return l:path
 endfunction
 
