@@ -2,6 +2,7 @@ let g:effort_gf#config = get(g:, 'effort_gf#config', {})
 let g:effort_gf#config.debug = get(g:effort_gf#config, 'debug', v:false)
 let g:effort_gf#config.root_markers = get(g:effort_gf#config, 'root_markers', ['.git', 'package.json'])
 let g:effort_gf#config.get_buffer_path = get(g:effort_gf#config, 'get_buffer_path', { -> expand('%:p:h')})
+let g:effort_gf#config.enable_findroot = get(g:effort_gf#config, 'enable_findroot', v:false)
 let g:effort_gf#config.converters = get(g:effort_gf#config, 'converters', {})
 
 "
@@ -46,8 +47,14 @@ endfunction
 "
 function! s:find(path)
   let l:path = ''
-  let l:path = strlen(l:path) == 0 ? findfile(a:path, g:effort_gf#config.get_buffer_path() . ';') : l:path
-  let l:path = strlen(l:path) == 0 ? findfile(a:path, s:find_root() . '**') : l:path
+  let l:path = strlen(l:path) == 0
+        \ ? findfile(a:path, g:effort_gf#config.get_buffer_path() . ';')
+        \ : l:path
+  if g:effort_gf#config.enable_findroot
+    let l:path = strlen(l:path) == 0
+          \ ? findfile(a:path, s:find_root() . '**')
+          \ : l:path
+  endif
   return l:path
 endfunction
 

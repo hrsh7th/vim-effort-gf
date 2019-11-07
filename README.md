@@ -3,12 +3,15 @@ improved gf command.
 
 # Setting
 
-## isfname
+## `&isfname`
 You can change `<cfile>` behavior.
 
 Set `isfname=\\` if you want to resolve php's use statement.
 
-## converter
+## `let g:effort_gf#config.enable_findroot`
+If `v:true`, search file from root dir when can't find by upward search.
+
+## `let g:effort_gf#config.converter`
 You can add additional converters.
 
 ```
