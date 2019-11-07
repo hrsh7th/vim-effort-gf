@@ -4,14 +4,23 @@ let g:effort_gf#config.root_markers = get(g:effort_gf#config, 'root_markers', ['
 let g:effort_gf#config.get_buffer_path = get(g:effort_gf#config, 'get_buffer_path', { -> expand('%:p:h')})
 let g:effort_gf#config.converters = get(g:effort_gf#config, 'converters', {})
 
+"
+" effort_gf#find
+"
 function! effort_gf#find(word)
   return s:find(s:convert(a:word))
 endfunction
 
+"
+" effort_gf#is
+"
 function! effort_gf#is(path)
   return stridx(expand('%:p'), fnamemodify(a:path, ':p')) == 0
 endfunction
 
+"
+" s:convert
+"
 function! s:convert(word)
   call s:debug('input', a:word)
   let word = a:word
@@ -28,10 +37,19 @@ function! s:convert(word)
   return word
 endfunction
 
-function! s:find(word)
-  return findfile(a:word, s:find_root() . '**')
+"
+" s:find
+"
+function! s:find(path)
+  let l:path = a:path
+  let l:path = empty(l:path) ? findfile(a:path . ';') : a:path
+  let l:path = empty(l:path) ? findfile(a:path . '**') : a:path
+  return l:path
 endfunction
 
+"
+" s:find_root
+"
 function! s:find_root()
   let path = g:effort_gf#config.get_buffer_path()
   while path !=# ''
@@ -46,12 +64,18 @@ function! s:find_root()
   return ''
 endfunction
 
+"
+" s:debug
+"
 function! s:debug(name, value)
   if g:effort_gf#config.debug
     echomsg a:name . ': ' . a:value
   endif
 endfunction
 
+"
+" s:take_extension
+"
 function! s:take_extension(word)
   for suffix in split(getbufvar(bufnr('%'), '&suffixesadd', ''), ',')
     let regex = escape(suffix, '.') . '$'
